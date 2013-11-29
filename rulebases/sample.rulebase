@@ -30,7 +30,7 @@ annotate=tag4:+this="that"
 rule=csv:%r1:char-to:,%,%r2:char-to:,%,%r3:char-to:,%,%r4:rest%
 
 # CSV: field1,,field3
-rule=better-csv:CSV: %f1:char-sep:,%,%f2:char-sep:,%,%f3:char-sep:,%
+rule=better-csv:CSV: %f1:char-sep:,%,%f2:char-sep:,%,%f3:char-sep:\x2c%
 
 # Snow White and the Seven Dwarfs
 rule=tale:Snow White and %company:rest%

@@ -37,9 +37,9 @@
 
 /* some helpers */
 static inline int
-hParseInt(const unsigned char **buf, size_t *lenBuf)
+hParseInt(const char **buf, size_t *lenBuf)
 {
-	const unsigned char *p = *buf;
+	const char *p = *buf;
 	size_t len = *lenBuf;
 	int i = 0;
 
@@ -74,7 +74,7 @@ hParseInt(const unsigned char **buf, size_t *lenBuf)
  */
 #define BEGINParser(ParserName) \
 int ln_parse##ParserName(const char *str, size_t strLen, size_t *offs, \
-                      __attribute__((unused)) es_str_t *ed, size_t *parsed,\
+                      __attribute__((unused)) const char *ed, size_t *parsed,\
 					  __attribute__((unused)) struct json_object **value) \
 { \
 	int r = LN_WRONGPARSER; \
@@ -94,7 +94,7 @@ fail: \
  * Parse a TIMESTAMP as specified in RFC5424 (subset of RFC3339).
  */
 BEGINParser(RFC5424Date)
-	const unsigned char *pszTS;
+	const char *pszTS;
 	/* variables to temporarily hold time information while we parse */
 	__attribute__((unused)) int year;
 	int month;
@@ -111,7 +111,7 @@ BEGINParser(RFC5424Date)
 	size_t orglen;
 	/* end variables to temporarily hold time information while we parse */
 
-	pszTS = (unsigned char*) str + *offs;
+	pszTS = str + *offs;
 	len = orglen = strLen - *offs;
 
 	year = hParseInt(&pszTS, &len);
@@ -149,7 +149,7 @@ BEGINParser(RFC5424Date)
 	/* Now let's see if we have secfrac */
 	if(len > 0 && *pszTS == '.') {
 		--len;
-		const unsigned char *pszStart = ++pszTS;
+		const char *pszStart = ++pszTS;
 		secfrac = hParseInt(&pszTS, &len);
 		secfracPrecision = (int) (pszTS - pszStart);
 	} else {
@@ -201,7 +201,7 @@ ENDParser
  * Parse a RFC3164 Date.
  */
 BEGINParser(RFC3164Date)
-	const unsigned char *p;
+	const char *p;
 	size_t len, orglen;
 	/* variables to temporarily hold time information while we parse */
 	__attribute__((unused)) int month;
@@ -211,7 +211,7 @@ BEGINParser(RFC3164Date)
 	int minute;
 	int second;
 
-	p = (unsigned char*) str + *offs;
+	p = str + *offs;
 	orglen = len = strLen - *offs;
 	/* If we look at the month (Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
 	 * we may see the following character sequences occur:
@@ -480,14 +480,14 @@ ENDParser
  */
 BEGINParser(CharTo)
 	const char *c;
-	unsigned char cTerm;
+	char cTerm;
 	size_t i;
 
 	assert(str != NULL);
 	assert(offs != NULL);
 	assert(parsed != NULL);
-	assert(es_strlen(ed) == 1);
-	cTerm = *(es_getBufAddr(ed));
+	assert(strlen(ed) == 1);
+	cTerm = ed[0];
 	c = str;
 	i = *offs;
 
@@ -516,14 +516,14 @@ ENDParser
  */
 BEGINParser(CharSeparated)
 	const char *c;
-	unsigned char cTerm;
+	char cTerm;
 	size_t i;
 
 	assert(str != NULL);
 	assert(offs != NULL);
 	assert(parsed != NULL);
-	assert(es_strlen(ed) == 1);
-	cTerm = *(es_getBufAddr(ed));
+	assert(strlen(ed) == 1);
+	cTerm = ed[0];
 	c = str;
 	i = *offs;
 

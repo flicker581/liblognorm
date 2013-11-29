@@ -202,21 +202,18 @@ parseFieldDescr(ln_ctx ctx, struct ln_ptree **subtree, es_str_t *rule,
 		i++;
 	} else {
 		/* parse extra data */
-		CHKN(node->data = es_newStr(8));
+		es_emptyStr(*str);
 		i++;
 		while(i < lenBuf) {
 			if(buf[i] == '%') {
 				++i;
 				break; /* end of field */
 			}
-			CHKR(es_addChar(&node->data, buf[i++]));
+			CHKR(es_addChar(str, buf[i++]));
 		}
-		es_unescapeStr(node->data);
-		if(ctx->debug) {
-			cstr = es_str2cstr(node->data, NULL);
-			ln_dbgprintf(ctx, "parsed extra data: '%s'", cstr);
-			free(cstr);
-		}
+		es_unescapeStr(*str);
+		node->data = es_str2cstr(*str, NULL);
+		ln_dbgprintf(ctx, "parsed extra data: '%s'", node->data);
 	}
 
 
@@ -238,7 +235,7 @@ done:	return r;
  * @param[in/out] bufOffs parse pointer, up to which offset is parsed
  * 		(is updated so that it points to first char after consumed
  * 		string on exit).
- * @param[out] str literal extracted (is empty, when no litral could be found)
+ * @param[out] str literal extracted (is empty, when no literal could be found)
  * @return 0 on success, something else otherwise
  */
 static inline int

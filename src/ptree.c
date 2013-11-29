@@ -75,7 +75,7 @@ ln_deletePTreeNode(ln_fieldList_t *node)
 	ln_deletePTree(node->subtree);
 	es_deleteStr(node->name);
 	if(node->data != NULL)
-		es_deleteStr(node->data);
+		free(node->data);
 	free(node);
 }
 
@@ -375,7 +375,7 @@ ln_addFDescrToPTree(struct ln_ptree **tree, ln_fieldList_t *node)
 				&& curr->parser == node->parser
 				&& ((curr->data == NULL && node->data == NULL)
 					|| (curr->data != NULL && node->data != NULL
-						&& !es_strcmp(curr->data, node->data)))) {
+						&& !strcmp(curr->data, node->data)))) {
 			*tree = curr->subtree;
 			ln_deletePTreeNode(node);
 			r = 0;
